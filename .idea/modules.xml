@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/_build/default/lib/cowlib/cowlib.iml" filepath="$PROJECT_DIR$/_build/default/lib/cowlib/cowlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/gdax_client.iml" filepath="$PROJECT_DIR$/gdax_client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/_build/default/lib/goldrush/goldrush.iml" filepath="$PROJECT_DIR$/_build/default/lib/goldrush/goldrush.iml" />
+      <module fileurl="file://$PROJECT_DIR$/_build/default/lib/gun/gun.iml" filepath="$PROJECT_DIR$/_build/default/lib/gun/gun.iml" />
+      <module fileurl="file://$PROJECT_DIR$/_build/default/lib/jiffy/jiffy.iml" filepath="$PROJECT_DIR$/_build/default/lib/jiffy/jiffy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/_build/default/lib/lager/lager.iml" filepath="$PROJECT_DIR$/_build/default/lib/lager/lager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/_build/default/lib/ranch/ranch.iml" filepath="$PROJECT_DIR$/_build/default/lib/ranch/ranch.iml" />
+      <module fileurl="file://$PROJECT_DIR$/_build/default/lib/rz_util/rz_util.iml" filepath="$PROJECT_DIR$/_build/default/lib/rz_util/rz_util.iml" />
     </modules>
   </component>
 </project>

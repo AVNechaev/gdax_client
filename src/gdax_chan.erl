@@ -1,4 +1,4 @@
- %%%-------------------------------------------------------------------
+%%%-------------------------------------------------------------------
 %%% @author an
 %%% @copyright (C) 2017, <COMPANY>
 %%% @doc
@@ -25,10 +25,10 @@
 -define(SERVER, ?MODULE).
 
 -type gdax_tick() :: #{
-  instr => binary(),
-  time => pos_integer(),
-  last_price => float()
- }.
+instr => binary(),
+time => pos_integer(),
+last_price => float()
+}.
 
 -type tick_fun() :: fun((Tick :: gdax_tick()) -> ok).
 
@@ -90,7 +90,7 @@ do_message({text, Data}, State = #state{tick_fun = TF}) ->
       <<"product_id">> := Pair,
       <<"price">> := Price,
       <<"time">> := Time} ->
-      TF(#{instr = Pair, last_price = Price, time = Time});
+      TF(#{instr => Pair, last_price => Price, time => Time});
     _ ->
       ok
   end,
