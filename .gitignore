@@ -15,5 +15,4 @@ logs
 _build
 .idea/workspace.xml
 .idea/uiDesigner.xml
-*.iml
 rebar3.crashdump
