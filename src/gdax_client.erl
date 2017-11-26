@@ -10,10 +10,9 @@
 
 test() ->
   application:ensure_all_started(gun),
-  {ok, ConnPid} = gun:open("ws-feed.gdax.com", 443, #{transport => ssl, protocols => [http]}),
-  {ok,_} = gun:await_up(ConnPid),
-  gun:ws_upgrade(ConnPid, "/"),
-  ConnPid.
+  application:set_env(gdax_client, gdax_addr, "ws-feed.gdax.com"),
+  application:set_env(gdax_client, gdax_port, 443),
+  gdax_chan:start_link(fun(Data) -> io:format("GDAX GOT: ~p~n", [Data]) end).
 
 %%====================================================================
 %% Internal functions

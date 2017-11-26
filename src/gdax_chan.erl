@@ -54,8 +54,6 @@ init([TickFun]) ->
   GDAXAddr = rz_util:get_env(gdax_client, gdax_addr),
   GDAXPort = rz_util:get_env(gdax_client, gdax_port),
   {ok, ConnPid} = gun:open(GDAXAddr, GDAXPort, #{transport => ssl, protocols => [http]}),
-%%  {ok, H} = file:open("/home/an/gdax.log", [append, raw, binary]),
-%%  file:write(H, io_lib:format("--- LOG STARTED AT ~p ---~n", [erlang:localtime()])),
   {ok, #state{conn_id = ConnPid, tick_fun = TickFun}}.
 
 %%--------------------------------------------------------------------
@@ -65,6 +63,7 @@ handle_info({gun_ws, _, Msg}, State) -> do_message(Msg, State);
 handle_info(Other, State) ->
   lager:debug("GDAX MSG: ~p", [Other]),
   {noreply, State}.
+
 %%--------------------------------------------------------------------
 handle_call(_Request, _From, _State) -> exit(handle_call_unsupported).
 handle_cast(_Request, _State) -> exit(handle_cast_unsupported).
@@ -90,8 +89,19 @@ do_message({text, Data}, State = #state{tick_fun = TF}) ->
       <<"product_id">> := Pair,
       <<"price">> := Price,
       <<"time">> := Time} ->
-      TF(#{instr => Pair, last_price => Price, time => Time});
+      TF(#{instr => bin2instr(Pair), last_price => binary_to_float(Price), time => bin2time(Time)});
     _ ->
       ok
   end,
   {noreply, State}.
+
+%%--------------------------------------------------------------------
+bin2time(<<Y:4/binary,$-,M:2/binary,$-,D:2/binary,$T,H:2/binary,$:,Mi:2/binary,$:,S:2/binary, _/binary>>) ->
+  DateTime = {
+    {binary_to_integer(Y), binary_to_integer(M), binary_to_integer(D)},
+    {binary_to_integer(H), binary_to_integer(Mi), binary_to_integer(S)}
+  },
+  calendar:datetime_to_gregorian_seconds(DateTime).
+
+%%--------------------------------------------------------------------
+bin2instr(<<F:3/binary, _, S:3/binary>>) -> <<F/binary, S/binary>>.
