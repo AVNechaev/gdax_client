@@ -78,8 +78,7 @@ do_upgrade_chan(State = #state{conn_id = ConnId}) ->
   {noreply, State}.
 
 do_subscribe(State = #state{conn_id = ConnId}) ->
-  {ok, D} = file:read_file("/home/an/req"),
-  gun:ws_send(ConnId, {text, D}),
+  gun:ws_send(ConnId, {text, gdax_subscribe_msg()}),
   {noreply, State}.
 
 do_message({text, Data}, State = #state{tick_fun = TF}) ->
@@ -105,3 +104,20 @@ bin2time(<<Y:4/binary,$-,M:2/binary,$-,D:2/binary,$T,H:2/binary,$:,Mi:2/binary,$
 
 %%--------------------------------------------------------------------
 bin2instr(<<F:3/binary, _, S:3/binary>>) -> <<F/binary, S/binary>>.
+
+%%--------------------------------------------------------------------
+gdax_subscribe_msg() ->
+  iolist_to_binary(
+    [
+      "{
+    \"type\": \"subscribe\",
+    \"product_ids\": [
+        \"ETH-USD\",
+        \"BTC-USD\",
+        \"LTC-USD\"
+    ],
+    \"channels\": [
+        \"ticker\"
+    ]}"
+    ]
+  ).
