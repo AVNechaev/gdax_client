@@ -36,7 +36,9 @@ last_price => float()
 
 -record(state, {
   conn_id :: pid(),
-  tick_fun :: tick_fun()
+  tick_fun :: tick_fun(),
+  last_subscribe :: calendar:datetime(),
+  ticks_since_last_subscribe = 0 :: non_neg_integer()
 }).
 
 -compile([{parse_transform, lager_transform}]).
@@ -79,9 +81,9 @@ do_upgrade_chan(State = #state{conn_id = ConnId}) ->
 
 do_subscribe(State = #state{conn_id = ConnId}) ->
   gun:ws_send(ConnId, {text, gdax_subscribe_msg()}),
-  {noreply, State}.
+  {noreply, State#state{last_subscribe = erlang:localtime(), ticks_since_last_subscribe = 0}}.
 
-do_message({text, Data}, State = #state{tick_fun = TF}) ->
+do_message({text, Data}, State = #state{tick_fun = TF, ticks_since_last_subscribe = TickCnt}) ->
   case jiffy:decode(Data, [return_maps]) of
     #{
       <<"type">> := <<"ticker">>,
@@ -92,6 +94,10 @@ do_message({text, Data}, State = #state{tick_fun = TF}) ->
     _ ->
       ok
   end,
+  {noreply, State#state{ticks_since_last_subscribe = TickCnt + 1}};
+%%---
+do_message(Other, State) ->
+  lager:debug("UNEXPECTED GDAX MSG: ~p", [Other]),
   {noreply, State}.
 
 %%--------------------------------------------------------------------
