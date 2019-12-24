@@ -98,7 +98,7 @@ do_message({text, Data}, State = #state{tick_fun = TF, ticks_since_last_subscrib
       <<"product_id">> := Pair,
       <<"price">> := Price,
       <<"time">> := Time} ->
-      TF(#{instr => bin2instr(Pair), last_price => binary_to_float(Price), time => bin2time(Time)});
+      TF(#{instr => bin2instr(Pair), last_price => bin2float(Price), time => bin2time(Time)});
     _ ->
       ok
   end,
@@ -118,6 +118,14 @@ bin2time(<<Y:4/binary,$-,M:2/binary,$-,D:2/binary,$T,H:2/binary,$:,Mi:2/binary,$
 
 %%--------------------------------------------------------------------
 bin2instr(<<F:3/binary, _, S:3/binary>>) -> <<F/binary, S/binary>>.
+
+%%--------------------------------------------------------------------
+bin2float(Bin) ->
+  try
+    binary_to_float(Bin)
+  catch _:_ ->
+    float(binary_to_integer(Bin))
+  end.
 
 %%--------------------------------------------------------------------
 gdax_subscribe_msg() ->
