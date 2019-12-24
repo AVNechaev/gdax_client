@@ -55,8 +55,16 @@ start_link(TickFun) ->
 init([TickFun]) ->
   GDAXAddr = rz_util:get_env(gdax_client, gdax_addr),
   GDAXPort = rz_util:get_env(gdax_client, gdax_port),
-  {ok, ConnPid} = gun:open(GDAXAddr, GDAXPort, #{transport => ssl, protocols => [http]}),
-  {ok, #state{conn_id = ConnPid, tick_fun = TickFun}}.
+  Enabled = rz_util:get_env(gdax_client, enabled),
+  case Enabled of
+    true ->
+      lager:info("GDAX client enabled."),
+      {ok, ConnPid} = gun:open(GDAXAddr, GDAXPort, #{transport => ssl, protocols => [http]}),
+      {ok, #state{conn_id = ConnPid, tick_fun = TickFun}};
+    _ ->
+      lager:info("GDAX client disabled."),
+      {ok, #state{conn_id = undefined, tick_fun = undefined}}
+  end.
 
 %%--------------------------------------------------------------------
 handle_info({gun_up, _, http}, State) -> do_upgrade_chan(State);
